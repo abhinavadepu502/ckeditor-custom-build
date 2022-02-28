@@ -1,0 +1,100 @@
+<mat-stepper  #stepper>
+  <mat-step [stepControl]="metaForm">
+    <form [formGroup]="metaForm">
+      <ng-template matStepLabel>Meta Details</ng-template>
+      <mat-form-field appearance="fill">
+        <mat-label>First Dropdown</mat-label>
+        <select matNativeControl required formControlName="firstDropdown">
+          <option label="--select--"></option>
+          <option value="1">First</option>
+          <option value="2">Second</option>
+        </select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Second Dropdown</mat-label>
+        <select matNativeControl required formControlName="secondDropdown">
+          <option label="--select--"></option>
+          <option value="1">First</option>
+          <option value="2">Second</option>
+        </select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Publish Timestamp</mat-label>
+        <input matInput type="datetime-local" formControlName="publishDate" required>
+      </mat-form-field>
+      <ckeditor [editor]="Editor" [config]="config" (ready)="onReady($event)" formControlName="template"></ckeditor>
+
+      <div>
+        <button mat-button matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <!-- #docregion label -->
+  <mat-step [stepControl]="imageForm" label="Select your source image">
+    <!-- #enddocregion label -->
+    <!-- <mat-form-field appearance="fill"> -->
+    <mat-label>Select your image</mat-label>
+    <div style="display:flex">
+    <div>
+      <input type="file" (change)="onFileChange($event)" />
+    </div>
+    <div style="display:flex; flex-direction: row;">
+      <div *ngFor="let item of imageList" (click)="imageSelected(item)" style="cursor:pointer;margin-right:20px">
+        <img [src]="item.imageUrl" width="200" height="120" />
+        <h4>{{item.label}}</h4>
+      </div>
+    </div>
+    
+    </div>
+    <!-- </mat-form-field> -->
+    <mat-form-field appearance="fill">
+      <mat-label>Width</mat-label>
+    <input matInput #width placeholder="width" />
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Height</mat-label>
+      <input matInput #height placeholder="height" />
+    </mat-form-field>
+    <button (click)="setWidthHeight(+width.value,+height.value)">Set</button>
+    <form [formGroup]="imageForm">
+      <image-cropper [hideResizeSquares]="true" [imageChangedEvent]="imgChangeEvt" [maintainAspectRatio]="false" [cropper]="cropper"
+        [resizeToWidth]="256"  format="png" (imageCropped)="cropImg($event)">
+      </image-cropper>
+
+      <div *ngIf="imageForm.value?.image">
+        <h3>Preview</h3>
+        <div>
+          <img [src]="imageForm.value?.image" />
+        </div>
+      </div>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="complete()" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="imageForm" label="Select your source image">
+    <mat-label>Review</mat-label>
+    <div>
+      <div>First Dropdown : {{finalPayload.firstDropdown}}</div>
+      <div>Second Dropdown : {{finalPayload.secondDropdown}}</div>
+      <div>Description : {{finalPayload.description}}</div>
+      <div>Publish Timestamp : {{finalPayload.publishDate}}</div>
+      <div>Image : </div><br />
+      <img [src]="finalPayload.image" />
+      <br />
+      Content : <br />
+      <div [innerHTML]="finalPayload.template"></div>
+    </div>
+    <button mat-button >Finish</button>
+  </mat-step>
+</mat-stepper>
+
+
+<!-- Copyright 2022 Google LLC. All Rights Reserved.
+    Use of this source code is governed by an MIT-style license that
+    can be found in the LICENSE file at https://angular.io/license -->
